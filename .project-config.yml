@@ -1,0 +1,29 @@
+project-config-version: 1.0
+
+service:
+    port: 80
+    # port: 8080
+    # subdomain:       #[subdomain](.environmemnt/stack)?.containerstore.com
+    # health: /health  # Override for health check URI.
+
+# secrets:             # Vault secrets to inject
+#                      # ${environment} substituted by Swarm-Control parameter `DEPLOY_ENVIRONMENT` in TeamCity
+#                      # E.g. To mount in container at /etc/secrets/database/prd/pos/customer_app/password
+#                      # This `secrets` section is deprecated in favor of [injecting a `VAULT_TOKEN`](0028-docker-secrets.md).
+#   - /database/${environment}/pos/customer_app/password
+
+# notifications:       # Who to notify for failed health-check or OWASP vulnerabilities
+#   emails: yourname@containerstore.com,yourteam@containerstore.com
+#   slack_channel: '#devops_oncall_test'
+
+# metrics:             # Where Prometheus will scrape metrics from
+#   app:
+#      port: default   # use service.port for scraping metrics
+#      path: /xyz      # override URI path from default: /metrics
+#   jmx:
+#      port: 8989      # scrape additional JVM metrics from this port
+#                      # Use with Prometheus' standard JavaAgent
+
+# logging:             #
+#   format: json       # Override Splunk Driver log format from default: raw
+#   sourcetype: _json_ # Override Splunk sourcetype from default: log4j_tcs_v2
