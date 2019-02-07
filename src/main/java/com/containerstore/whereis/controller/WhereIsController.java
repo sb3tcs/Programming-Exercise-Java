@@ -5,6 +5,12 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.type.PhoneNumber;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +24,21 @@ import static org.springframework.http.HttpStatus.*;
 
 @Controller
 public class WhereIsController {
+    private final Logger log = LoggerFactory.getLogger(WhereIsController.class);
+
+    private final MeterRegistry registry;
+
+    private final Counter unsuccessfulRoomFinds;
+    private final Counter dataCentralRoomFinds;
+
+    @Autowired
+    WhereIsController(MeterRegistry registry) {
+        this.registry = registry;
+
+        unsuccessfulRoomFinds = registry.counter("unsuccessfulRoomFinds");
+        dataCentralRoomFinds = registry.counter("dataCentral");
+    }
+
     @GetMapping("/")
     public String whereisForm(Model model) {
         model.addAttribute("queryModel", new WhereIsViewModel());
@@ -53,7 +74,12 @@ public class WhereIsController {
     private String replyFor(String query) {
         String location;
 
-        switch (query.trim().toLowerCase()) {
+        String sanitized = query.trim().toLowerCase();
+
+        switch (sanitized) {
+            //Per user success rate
+            //Metric for finding each room
+            //Aggregate for finding *any* room
             case "fill their baskets":
             case "service selection price":
             case "man in the desert":
@@ -61,6 +87,7 @@ public class WhereIsController {
                 location = "in the vendor conference area (off of reception)";
                 break;
             case "data central":
+                dataCentralRoomFinds.increment();
                 location = "in the Information Systems area";
                 break;
             case "perfect product presentation":
@@ -95,6 +122,9 @@ public class WhereIsController {
                 location = "up the stairs, turn right (adjacent to merchandising)";
                 break;
             default:
+                log.info("Could not find room for \"{}\"", sanitized);
+                //Metric for not finding a conference room
+                unsuccessfulRoomFinds.increment();
                 location = "somewhere, but I don't know where";
                 break;
         }

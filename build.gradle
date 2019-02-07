@@ -2,9 +2,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-      classpath 'com.bmuschko:gradle-tomcat-plugin:2.5'
-    }
 }
 
 plugins {
@@ -14,14 +11,15 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'war'
+apply plugin: 'application'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.bmuschko.tomcat'
 
 jar {
     baseName = 'where-is-app'
     version =  '0.1.0'
 }
+
+mainClassName = "com.containerstore.whereis.App"
 
 repositories {
     mavenCentral()
@@ -50,14 +48,4 @@ dependencies {
     compile 'com.twilio.sdk:twilio:7.3.0'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-
-    def tomcatVersion = '8.5.16'
-    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-        "org.apache.tomcat.embed:tomcat-embed-logging-juli:8.5.2",
-        "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
-}
-
-tomcat {
-  httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
-  ajpProtocol  = 'org.apache.coyote.ajp.AjpNio2Protocol'
 }

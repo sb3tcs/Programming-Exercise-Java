@@ -90,7 +90,3 @@ target/
 /bin
 
 out/
-
-
-# bo
-!.project-config.yml
